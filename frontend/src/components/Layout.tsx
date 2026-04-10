@@ -1,11 +1,17 @@
-import { Outlet, NavLink } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/useAuthStore';
 
 export const Layout = () => {
+  const { logout } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <div className="app-container">
-      <Toaster position="top-right" />
-      
       {/* Sidebar Navigation */}
       <aside className="sidebar">
         <div className="sidebar-logo">
@@ -14,7 +20,7 @@ export const Layout = () => {
             <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
             <line x1="12" y1="22.08" x2="12" y2="12"></line>
           </svg>
-          Coper App
+          Croper App
         </div>
         
         <nav className="nav-links">
@@ -40,7 +46,13 @@ export const Layout = () => {
             <div style={{ width: 32, height: 32, borderRadius: '50%', backgroundColor: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
               U
             </div>
-            <span>Usuario</span>
+            <span style={{ fontWeight: 500 }}>Mi Cuenta</span>
+            <button 
+              onClick={handleLogout} 
+              style={{ background: 'none', border: 'none', color: 'var(--danger)', fontSize: '0.875rem', fontWeight: 500, cursor: 'pointer', marginLeft: '1rem' }}
+            >
+              Cerrar sesión
+            </button>
           </div>
         </header>
 
@@ -51,3 +63,4 @@ export const Layout = () => {
     </div>
   );
 };
+
