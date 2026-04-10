@@ -47,4 +47,9 @@ export class CreateProductDto {
   @IsString()
   @IsUrl({}, { message: 'Debe ser una URL válida' })
   imageUrl?: string;
+
+  @ApiProperty({ example: true, description: 'Estado lógico del producto', required: false })
+  @IsOptional()
+  @IsBoolean({ message: 'El estado debe ser verdadero o falso' })
+  isActive?: boolean;
 }

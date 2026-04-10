@@ -14,8 +14,9 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => {
-  // Initialize from local storage
-  const storedToken = localStorage.getItem('token');
+  // Initialize from local storage, checking for invalid 'undefined' string that might have leaked
+  let storedToken = localStorage.getItem('token');
+  if (storedToken === 'undefined') storedToken = null;
   
   return {
     token: storedToken,
@@ -26,8 +27,8 @@ export const useAuthStore = create<AuthState>((set) => {
       set({ isLoading: true });
       try {
         const response: AuthResponse = await login(data);
-        localStorage.setItem('token', response.token);
-        set({ token: response.token, isAuthenticated: true, isLoading: false });
+        localStorage.setItem('token', response.access_token);
+        set({ token: response.access_token, isAuthenticated: true, isLoading: false });
         toast.success('¡Sesión iniciada exitosamente!');
         return true;
       } catch (err: any) {
@@ -41,10 +42,12 @@ export const useAuthStore = create<AuthState>((set) => {
     register: async (data: RegisterDto) => {
       set({ isLoading: true });
       try {
-        const response: AuthResponse = await register(data);
-        localStorage.setItem('token', response.token);
-        set({ token: response.token, isAuthenticated: true, isLoading: false });
-        toast.success('¡Cuenta creada exitosamente!');
+        await register(data);
+        // Backend doesn't return token on register, so we auto-login now
+        const loginResponse: AuthResponse = await login({ email: data.email, password: data.password });
+        localStorage.setItem('token', loginResponse.access_token);
+        set({ token: loginResponse.access_token, isAuthenticated: true, isLoading: false });
+        toast.success('¡Cuenta creada e iniciada exitosamente!');
         return true;
       } catch (err: any) {
         const msg = err.response?.data?.message || 'Error al registrarte';

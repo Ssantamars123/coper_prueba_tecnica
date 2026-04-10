@@ -27,6 +27,7 @@ export interface CreateProductDto {
   category: string;
   stock: number;
   imageUrl?: string;
+  isActive?: boolean;
 }
 
 export interface UpdateProductDto extends Partial<CreateProductDto> {

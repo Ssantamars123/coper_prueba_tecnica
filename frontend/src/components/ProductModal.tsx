@@ -48,7 +48,14 @@ export const ProductModal = ({ product, onClose, onSave, isLoading }: ProductMod
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSave(formData);
+    
+    // Create payload and remove empty optional fields
+    const payload = { ...formData } as any;
+    if (!payload.imageUrl || payload.imageUrl.trim() === '') {
+      delete payload.imageUrl;
+    }
+    
+    await onSave(payload);
   };
 
   return (
@@ -63,12 +70,12 @@ export const ProductModal = ({ product, onClose, onSave, isLoading }: ProductMod
           <div className="modal-body">
             <div className="form-group">
               <label className="form-label">Nombre del Producto</label>
-              <input required type="text" name="name" className="form-control" value={formData.name} onChange={handleChange} />
+              <input required minLength={3} maxLength={100} type="text" name="name" className="form-control" value={formData.name} onChange={handleChange} />
             </div>
             
             <div className="form-group">
               <label className="form-label">Descripción</label>
-              <textarea required name="description" className="form-control" rows={3} value={formData.description} onChange={handleChange} />
+              <textarea required minLength={10} maxLength={500} name="description" className="form-control" rows={3} value={formData.description} onChange={handleChange} />
             </div>
 
             <div style={{ display: 'flex', gap: '1rem' }}>
@@ -84,15 +91,13 @@ export const ProductModal = ({ product, onClose, onSave, isLoading }: ProductMod
 
             <div className="form-group">
               <label className="form-label">Categoría</label>
-              <input required type="text" name="category" className="form-control" value={formData.category} onChange={handleChange} />
+              <input required minLength={3} type="text" name="category" className="form-control" value={formData.category} onChange={handleChange} />
             </div>
 
-            {product && (
-              <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <input type="checkbox" name="isActive" id="isActive" checked={(formData as UpdateProductDto).isActive} onChange={handleChange} />
-                <label htmlFor="isActive" style={{ margin: 0, cursor: 'pointer', color: 'var(--text-active)' }}>Producto Activo</label>
-              </div>
-            )}
+            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <input type="checkbox" name="isActive" id="isActive" checked={formData.isActive} onChange={handleChange} />
+              <label htmlFor="isActive" style={{ margin: 0, cursor: 'pointer', color: 'var(--text-active)' }}>Producto Activo</label>
+            </div>
           </div>
 
           <div className="modal-footer">

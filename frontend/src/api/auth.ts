@@ -12,7 +12,11 @@ export interface RegisterDto {
 }
 
 export interface AuthResponse {
-  token: string;
+  access_token: string;
+  user: {
+    name: string;
+    email: string;
+  };
 }
 
 export const login = async (data: LoginDto) => {
@@ -21,6 +25,6 @@ export const login = async (data: LoginDto) => {
 };
 
 export const register = async (data: RegisterDto) => {
-  const response = await apiClient.post<AuthResponse>('/auth/register', data);
+  const response = await apiClient.post<any>('/auth/register', data);
   return response.data;
 };
